@@ -4504,7 +4504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1270ed9e2ca44674d88a8c5265aaeaa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onlyDisyplayPathGizmos: 0
+  onlyDisyplayPathGizmos: 1
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 256
