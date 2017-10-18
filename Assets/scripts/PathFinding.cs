@@ -7,32 +7,28 @@ using Debug = UnityEngine.Debug;
 
 public class PathFinding : MonoBehaviour
 {
-    public Transform seeker, target;
+    private PathRequestManager requestManager;
     private Grid grid;
 
     private void Awake()
     {
+        requestManager = GetComponent<PathRequestManager>();
         grid = GetComponent<Grid>();
     }
-
-    private void Update()
+    
+    public void StartFindPath(Vector3 startPos, Vector3 targetPos)
     {
-        if (Input.GetButtonDown("Jump"))
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            
-            int i = 1;
-            while (i-- > 0)
-                FindPath(seeker.position, target.position);
-            
-            sw.Stop();
-            Debug.Log("Path found: " + sw.ElapsedMilliseconds + " ms");
-        }
+        StartCoroutine(FindPath(startPos, targetPos));
     }
-
-    void FindPath(Vector3 startPos, Vector3 targetPos)
+    
+    IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        
+        Vector3[] wayPoints = new Vector3[0];
+        bool pathSuccesss = false;
+        
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
         
@@ -48,8 +44,10 @@ public class PathFinding : MonoBehaviour
 
             if (currentNode == targetNode)
             {
-                RetracePath(startNode, targetNode);
-                return;
+                sw.Stop();
+                print("Path found: " + sw.ElapsedMilliseconds + " ms");
+                pathSuccesss = true;
+                break;
             }
            
 
@@ -71,9 +69,15 @@ public class PathFinding : MonoBehaviour
                 }
             }
         }
+        yield return null;
+        if (pathSuccesss)
+        {
+            wayPoints = RetracePath(startNode, targetNode);
+        }
+        requestManager.FinishedProcessingPath(wayPoints, pathSuccesss);
     }
 
-    void RetracePath(Node startNode, Node endNode)
+    Vector3[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;

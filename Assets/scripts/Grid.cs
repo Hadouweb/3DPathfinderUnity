@@ -26,6 +26,14 @@ public class Grid : MonoBehaviour
         get { return gridSizeX * gridSizeY; }
     }
 
+    public void UpdateGrid()
+    {
+        nodeDiameter = nodeRadius * 2;
+        gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+        CreateGrid();
+    }
+    
     private void CreateGrid()
     {
         grid = new Node[gridSizeX, gridSizeY];
